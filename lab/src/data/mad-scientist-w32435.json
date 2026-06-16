@@ -1,0 +1,22 @@
+{
+  "host": "mad-scientist-w32435",
+  "devices": [
+    {
+      "index": 0,
+      "name": "NVIDIA RTX A4000",
+      "cc": "8.6",
+      "warpSize": 32,
+      "maxThreadsPerSM": 1536,
+      "maxWarpsPerSM": 48,
+      "maxBlocksPerSM": 16,
+      "regsPerSM": 65536,
+      "regsPerBlock": 65536,
+      "smemPerSM": 102400,
+      "smemPerBlock": 49152,
+      "smCount": 48,
+      "maxThreadsPerBlock": 1024,
+      "regAllocUnit": 256,
+      "smemAllocUnit": 128
+    }
+  ]
+}
