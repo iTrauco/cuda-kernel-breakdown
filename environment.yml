@@ -6,4 +6,5 @@ dependencies:
   - pytest
   - python=3.11
   - numpy
+  - cuda-toolkit
 prefix: /home/trauco/miniconda3/envs/cuda-kernel-breakdown
