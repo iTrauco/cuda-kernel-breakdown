@@ -1,0 +1,9 @@
+name: cuda-kernel-breakdown
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pytest
+  - python=3.11
+  - numpy
+prefix: /home/trauco/miniconda3/envs/cuda-kernel-breakdown
