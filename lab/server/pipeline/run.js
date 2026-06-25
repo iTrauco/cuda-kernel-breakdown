@@ -25,7 +25,7 @@ export async function runWorkload(source, metricSet) {
   await fs.writeFile(src, source);
 
   try {
-    await exec(config.nvcc, [`-arch=${config.arch}`, '-o', bin, src]);
+    await exec(config.nvcc, ['-ccbin', config.ccbin, `-arch=${config.arch}`, '-o', bin, src]);
   } catch (e) {
     return { ok: false, stage: 'compile', error: e.stderr || e.message };
   }
