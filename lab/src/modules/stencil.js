@@ -2,7 +2,6 @@
 // concept's quantitative core — global loads per output pixel per strategy — offline.
 // specimen generates the selected strategy's kernel for the runner to profile. view
 // lays the predicted model beside the measured counters; it draws no conclusion.
-import { computeOccupancy } from '../lib/occupancy.js'; // not used; kept paths independent
 
 export const stencil = {
   id: 'stencil',
