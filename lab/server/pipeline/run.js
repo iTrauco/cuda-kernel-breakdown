@@ -3,7 +3,7 @@ import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { config } from '../config.js';
-import { parseNcu, detectError } from './parse.js';
+import { parseNcu, detectError, allNull } from './parse.js';
 
 const exec = promisify(execFile);
 
@@ -30,7 +30,7 @@ export async function runWorkload(source, metricSet) {
     return { ok: false, stage: 'compile', error: e.stderr || e.message };
   }
 
-  const ncuArgs = ['--metrics', metricSet.join(','), bin];
+  const ncuArgs = ['--csv', '--metrics', metricSet.join(','), bin];
   const cmd = config.ncuSudo ? 'sudo' : config.ncu;
   const args = config.ncuSudo ? [config.ncu, ...ncuArgs] : ncuArgs;
 
@@ -45,5 +45,10 @@ export async function runWorkload(source, metricSet) {
   const err = detectError(raw);
   if (err) return { ok: false, stage: 'profile', error: err, raw };
 
-  return { ok: true, metrics: parseNcu(raw, metricSet), raw };
+  const metrics = parseNcu(raw, metricSet);
+  if (allNull(metrics)) {
+    return { ok: false, stage: 'profile', error: 'no_metrics_parsed', raw };
+  }
+
+  return { ok: true, metrics, raw };
 }
