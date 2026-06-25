@@ -3,8 +3,9 @@
 import './styles.css';
 import { createLoader } from './lib/loader.js';
 import { occupancy } from './modules/occupancy.js';
+import { stencil } from './modules/stencil.js';
 
 createLoader({
-  modules: [occupancy],
+  modules: [occupancy, stencil],
   mount: document.querySelector('#app'),
 });
