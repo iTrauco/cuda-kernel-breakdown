@@ -3,17 +3,26 @@ import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { config } from '../config.js';
-import { buildKernel } from '../kernel/template.js';
 import { parseNcu, detectError } from './parse.js';
 
 const exec = promisify(execFile);
 
-export async function runWorkload(knobs) {
+// compile -> profile -> parse for an arbitrary kernel source and metric set.
+// source and metricSet come from the caller (a module's specimen); the runner
+// bakes in neither a kernel nor a metric list.
+export async function runWorkload(source, metricSet) {
+  if (typeof source !== 'string' || !source.trim()) {
+    return { ok: false, stage: 'input', error: 'source must be a non-empty string' };
+  }
+  if (!Array.isArray(metricSet) || !metricSet.length) {
+    return { ok: false, stage: 'input', error: 'metricSet must be a non-empty array' };
+  }
+
   await fs.mkdir(config.workDir, { recursive: true });
   const src = path.join(config.workDir, 'work.cu');
   const bin = path.join(config.workDir, 'work');
 
-  await fs.writeFile(src, buildKernel(knobs));
+  await fs.writeFile(src, source);
 
   try {
     await exec(config.nvcc, [`-arch=${config.arch}`, '-o', bin, src]);
@@ -21,7 +30,7 @@ export async function runWorkload(knobs) {
     return { ok: false, stage: 'compile', error: e.stderr || e.message };
   }
 
-  const ncuArgs = ['--metrics', config.metrics.join(','), bin];
+  const ncuArgs = ['--metrics', metricSet.join(','), bin];
   const cmd = config.ncuSudo ? 'sudo' : config.ncu;
   const args = config.ncuSudo ? [config.ncu, ...ncuArgs] : ncuArgs;
 
@@ -36,5 +45,5 @@ export async function runWorkload(knobs) {
   const err = detectError(raw);
   if (err) return { ok: false, stage: 'profile', error: err, raw };
 
-  return { ok: true, knobs, metrics: parseNcu(raw, config.metrics), raw };
+  return { ok: true, metrics: parseNcu(raw, metricSet), raw };
 }
